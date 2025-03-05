@@ -10,7 +10,7 @@ import mlflow
 from src.entity.config_entity import TrainingConfig
 
 import dagshub
-dagshub.init(repo_owner='umitaktas', repo_name='MLops_Image_Classification', mlflow=True)
+dagshub.init(repo_owner='umitaktas', repo_name='Transformer_Model_From_Scratch_Project', mlflow=True)
 
 class Training():
     
@@ -104,7 +104,7 @@ class Training():
         try:
             
            # uri for mlflow track url in dagshub or local host
-            uri="https://dagshub.com/umitaktas/MLops_Image_Classification.mlflow"   # for dagshub
+            uri="https://dagshub.com/umitaktas/Transformer_Model_From_Scratch_Project.mlflow"   # for dagshub
           
             # mlflow ui and other apps dont overlap
             # subprocess.Popen(["mlflow","ui"])
