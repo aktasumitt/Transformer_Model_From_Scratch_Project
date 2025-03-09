@@ -31,10 +31,10 @@ class Training():
     def load_object(self):
         try:
             train_dataset=load_obj(self.config.train_dataset_path)
-            train_dataloader=DataLoader(train_dataset,batch_size=self.config.batch_size,shuffle=True)
+            train_dataloader=DataLoader(train_dataset,batch_size=self.config.batch_size,shuffle=True,drop_last=True)
             
             valid_dataset=load_obj(self.config.validation_dataset_path)
-            valid_dataloader=DataLoader(valid_dataset,batch_size=self.config.batch_size,shuffle=False)
+            valid_dataloader=DataLoader(valid_dataset,batch_size=self.config.batch_size,shuffle=False,drop_last=True)
             
             loss_fn=torch.nn.CrossEntropyLoss(label_smoothing=self.config.label_smoothing)        
             

@@ -16,7 +16,7 @@ class Params():
     BATCH_SIZE=100
     NUM_TOKEN=54614
     NX=6
-    
+    STOP_TOKEN_IDX=2
     
 
     # For Training
@@ -25,7 +25,7 @@ class Params():
     BETA2 = 0.98
     epsilon=(10**-9)
     label_smoothing=0.1
-    EPOCHS = 7
+    EPOCHS = 10
     DEVICE = "cuda"
     LOAD_CHECKPOINT_FOR_TRAIN=False
 

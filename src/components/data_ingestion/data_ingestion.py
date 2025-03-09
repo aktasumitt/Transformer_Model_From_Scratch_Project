@@ -6,7 +6,7 @@ from src.entity.config_entity import DataIngestionConfig
 
 random.seed(42)
 
-nltk.download('punkt')
+nltk.download('punkt_tab')
 
 class DataIngestion():
     

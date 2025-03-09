@@ -7,8 +7,7 @@ def model_validation(valid_dataloader, loss_fn, Model, device):
     try:
         Model.eval()
 
-        progress_bar = tqdm.tqdm(
-            range(len(valid_dataloader)), "Validation Process")
+        progress_bar = tqdm.tqdm(range(len(valid_dataloader)), "Validation Process")
 
         with torch.no_grad():
 
@@ -37,6 +36,8 @@ def model_validation(valid_dataloader, loss_fn, Model, device):
                 correct_values_valid += (pred_valid ==output_decoder_valid).sum().item()
                 total_values_valid += (output_decoder_valid.size(0)* output_decoder_valid.size(1))
                 loss_values_valid += loss_valid.item()
+
+                progress_bar.update(1)
                 
             total_loss = loss_values_valid/(batch_valid+1)
             total_acc = (correct_values_valid/total_values_valid)*100

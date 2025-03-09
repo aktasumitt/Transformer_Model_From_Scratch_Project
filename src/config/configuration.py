@@ -49,7 +49,7 @@ class Configuration():
                                     num_token=self.params.NUM_TOKEN,
                                     NX=self.params.NX,
                                     max_len_sentence=self.params.MAX_LEN_SENTENCE,
-                                    stop_token=self.params.STOP_TOKEN,
+                                    stop_token=self.params.STOP_TOKEN_IDX,
                                     device=self.params.DEVICE)
 
         return configuration

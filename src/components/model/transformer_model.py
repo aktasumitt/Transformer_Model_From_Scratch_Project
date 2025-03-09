@@ -5,6 +5,8 @@ from src.components.model.decoder import Decoder
 from src.components.model.layers import Embedding ,PositionalEncoding
 from src.utils import save_obj
 from src.entity.config_entity import ModelConfig
+from src.exception.exception import ExceptionNetwork,sys
+
 
 
 class Transformer(nn.Module):
@@ -13,7 +15,7 @@ class Transformer(nn.Module):
         self.config=config
         self.batch_size = config.batch_size
         self.Nx = config.NX
-        self.max_len = config.max_len_sentence
+        self.max_len = config.max_len_sentence+2
         self.stop_token = config.stop_token
         self.d_model = config.d_model
         self.device= config.device
@@ -29,65 +31,84 @@ class Transformer(nn.Module):
         self.last_linear = nn.Linear(self.d_model * self.max_len, self.num_token)
     
     def Encoder_Stack(self, input):
-        # ENCODER
-        embed_enc = self.embedding(input)  # same embedding with encoder and scale with root(d_model)
-        encoder_in = self.positional_encoding(embed_enc)
-        
-        for i in range(self.Nx):  # Stack Encoder
-            encoder_in = self.encoder[i](encoder_in)
-        
-        return encoder_in
+        try:
+          # ENCODER
+          embed_enc = self.embedding(input)  # same embedding with encoder and scale with root(d_model)
+          encoder_in = self.positional_encoding(embed_enc)
+          
+          for i in range(self.Nx):  # Stack Encoder
+              encoder_in = self.encoder[i](encoder_in)
+          
+          return encoder_in
+
+        except Exception as e:
+            raise ExceptionNetwork(e,sys)
+    
     
     def Decoder_Stack(self, input_decoder, encoder_out):
-        embed_dec = self.embedding(input_decoder)  
-        decoder_in = self.positional_encoding(embed_dec)
-        
-        for i in range(self.Nx):
-            decoder_in = self.decoder[i](decoder_in, encoder_out)        
-        
-        return decoder_in
+        try:
+          embed_dec = self.embedding(input_decoder)  
+          decoder_in = self.positional_encoding(embed_dec)
+          
+          for i in range(self.Nx):
+              decoder_in = self.decoder[i](decoder_in, encoder_out)        
+          
+          return decoder_in
+
+        except Exception as e:
+            raise ExceptionNetwork(e,sys)
+    
         
     def forward(self, input_encoder, input_decoder, targets_decoder=None):
-        stop_token_idx = 0
-        output_list = []
-        
-        # ENCODER
-        encoder_out = self.Encoder_Stack(input_encoder)
-        
-        # DECODER
-        for i in range(self.max_len - 1):
-            decoder_out = self.Decoder_Stack(input_decoder, encoder_out)
-            
-            # Prediction layer
-            flat_out = self.flatten(decoder_out)
-            out_transformer = self.last_linear(flat_out)
-            output_list.append(out_transformer)
-            
-            if targets_decoder is not None:  # For training and we can use Teacher Forcing method
-                stop_token_idx += (targets_decoder[:, i] == self.stop_token).sum().item()
-                if stop_token_idx == self.batch_size:
-                    break
-                else:
-                    
-                    input_decoder = input_decoder.clone()
-                    input_decoder[:, i+1] = targets_decoder[:, i]
-            else:
-                soft = nn.functional.softmax(out_transformer, dim=-1)
-                _, pred = torch.max(soft, -1)
-                
-                if pred.item() == self.stop_token:
-                    break
-                else: 
-                    input_decoder = input_decoder.clone()
-                    input_decoder[:, i+1] = pred.item()
-        
-        return torch.stack(output_list).permute(1, 0, 2)  # (max_len, B, num_tokens) --> (B, max_len, num_tokens)
+        try:
+          stop_token_idx = 0
+          output_list = []
+          
+          # ENCODER
+          encoder_out = self.Encoder_Stack(input_encoder)
+          
+          # DECODER
+          for i in range(self.max_len - 1):
+              decoder_out = self.Decoder_Stack(input_decoder, encoder_out)
+              
+              # Prediction layer
+              flat_out = self.flatten(decoder_out)
+              out_transformer = self.last_linear(flat_out)
+              output_list.append(out_transformer)
+              
+              if targets_decoder is not None:  # For training and we can use Teacher Forcing method
+                  stop_token_idx += (targets_decoder[:, i] == self.stop_token).sum().item()
+                  if stop_token_idx == self.batch_size:
+                      break
+                  else:
+                      
+                      input_decoder = input_decoder.clone()
+                      input_decoder[:, i+1] = targets_decoder[:, i]
+              else:
+                  soft = nn.functional.softmax(out_transformer, dim=-1)
+                  _, pred = torch.max(soft, -1)
+                  
+                  if pred.item() == self.stop_token:
+                      break
+                  else: 
+                      input_decoder = input_decoder.clone()
+                      input_decoder[:, i+1] = pred.item()
+          
+          return torch.stack(output_list).permute(1, 0, 2)  # (max_len, B, num_tokens) --> (B, max_len, num_tokens)
+
+        except Exception as e:
+            raise ExceptionNetwork(e,sys)
     
     
 
 def model_create_and_save(config:ModelConfig):
+  try:
     model=Transformer(config)
     save_obj(data=model,save_path=config.model_save_path)
+
+  except Exception as e:
+    raise ExceptionNetwork(e,sys)
+    
 
 if __name__=="__main__":
     model_create_and_save()

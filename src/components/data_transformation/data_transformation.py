@@ -61,13 +61,13 @@ class DataTransformation():
         tokenized_data=load_json(self.config.tokenzied_data_path)
         shuffled_tokenized_data=load_json(self.config.shuffled_data_path)
         
-        word_box=self.create_word_box(tokenized_data,max_sentence_len=15)
+        word_box=self.create_word_box(tokenized_data)
         save_as_json(data=word_box,save_path=self.config.word_box_path)
         
         tokenized_idx_data=self.transform_word_to_idx(tokenized_data,word_box)
         tokenized_shuffled_idx_data=self.transform_word_to_idx(shuffled_tokenized_data,word_box)
-        
-        tensor_dataset=self.create_torch_dataset(tokenized_idx_data,tokenized_shuffled_idx_data)
+
+        tensor_dataset=self.create_torch_dataset(tokenized_shuffled_idx_data,tokenized_idx_data)
         
         train_dataset,valid_dataset,test_dataset=self.random_split_dataset(tensor_dataset)
         save_obj(train_dataset,self.config.transformed_train_dataset)

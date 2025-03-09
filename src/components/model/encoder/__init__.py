@@ -1,5 +1,7 @@
 import torch.nn as nn
 from src.components.model.layers import MultiHeadAttention,FeedForward
+from src.exception.exception import ExceptionNetwork,sys
+
 
 
 class Encoder(nn.Module):
@@ -12,7 +14,8 @@ class Encoder(nn.Module):
                 
         
     def forward(self,encoder_in):
-        
+      try:
+         
         mhe_out=self.MHA_encoder(query_data=encoder_in,key_data=encoder_in,value_data=encoder_in) # MHA
         mhe_out=self.layer_norm(mhe_out+encoder_in) # add and layer_norm
         
@@ -20,3 +23,6 @@ class Encoder(nn.Module):
         ff_out=self.layer_norm(ff_out+mhe_out) # add and layer_norm
         
         return ff_out
+
+      except Exception as e:
+        raise ExceptionNetwork(e,sys)
